@@ -3,199 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DukaanGo - Create Your Own Digital Dukaan</title>
+    <title>DukaanGo - 2026 Ultimate Edition</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --surface-color: #1E1E1E;
-            --accent-orange: #FF6600;
-            --accent-hover: #E65C00;
-            --text-primary: #FFFFFF;
-            --text-secondary: #AAAAAA;
-            --border-color: #333333;
+            --bg-color: #0b0f19;
+            --surface-color: rgba(17, 24, 39, 0.85);
+            --surface-solid: #111827;
+            --accent-orange: #f97316;
+            --accent-hover: #ea580c;
+            --accent-pink: #ec4899;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-orange: rgba(249, 115, 22, 0.3);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; position: relative; }
         
+        /* Glowing Ambient Background Orbs */
+        .glow-orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.12) 0%, rgba(147, 51, 234, 0.04) 60%, transparent 100%);
+            top: -100px;
+            right: -100px;
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
         /* Top Ad Banner */
         .ad-banner {
-            background: linear-gradient(90deg, #1E1E1E, #2A2A2A);
-            border-bottom: 2px dashed var(--accent-orange);
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(90deg, rgba(17, 24, 39, 0.9), rgba(31, 41, 55, 0.9));
+            border-bottom: 1px solid var(--border-orange);
             padding: 12px 20px;
             text-align: center;
-            font-size: 14px;
-            color: var(--accent-orange);
-            font-weight: bold;
+            font-size: 13px;
+            color: #fb923c;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(10px);
         }
 
         /* Header */
         header {
-            background-color: var(--surface-color);
-            padding: 15px 30px;
+            position: relative;
+            z-index: 10;
+            background-color: rgba(17, 24, 39, 0.7);
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
         }
-        .logo { font-size: 24px; font-weight: 800; color: var(--accent-orange); letter-spacing: 1px; cursor: pointer; }
+        .logo { 
+            font-size: 24px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #f97316, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer; 
+        }
         .btn {
-            background-color: var(--accent-orange);
+            background: linear-gradient(135deg, #f97316, #ea580c);
             color: white;
             border: none;
-            padding: 10px 22px;
+            padding: 10px 24px;
             font-size: 14px;
-            font-weight: bold;
-            border-radius: 6px;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
         }
-        .btn:hover { background-color: var(--accent-hover); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4); }
         .btn-outline {
             background: transparent;
-            border: 1px solid var(--accent-orange);
-            color: var(--accent-orange);
+            border: 1px solid var(--border-orange);
+            color: #fb923c;
+            box-shadow: none;
         }
-        .btn-outline:hover { background: rgba(255, 102, 0, 0.1); color: white; }
+        .btn-outline:hover { background: rgba(249, 115, 22, 0.1); color: white; border-color: var(--accent-orange); }
 
         /* Main Hero Section */
         .hero {
+            position: relative;
+            z-index: 10;
             text-align: center;
-            padding: 80px 20px 40px 20px;
-            max-width: 800px;
+            padding: 70px 20px 40px 20px;
+            max-width: 900px;
             margin: 0 auto;
         }
-        .hero h1 { font-size: 42px; margin-bottom: 20px; line-height: 1.2; }
-        .hero h1 span { color: var(--accent-orange); }
-        .hero p { font-size: 18px; color: var(--text-secondary); margin-bottom: 30px; }
+        .hero h1 { 
+            font-size: 48px; 
+            margin-bottom: 20px; 
+            line-height: 1.15; 
+            font-weight: 900;
+            letter-spacing: -1.5px;
+        }
+        .hero h1 span { 
+            background: linear-gradient(90deg, #f97316, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 18px; color: var(--text-secondary); margin-bottom: 40px; line-height: 1.6; max-width: 750px; margin-left: auto; margin-right: auto; }
+
+        /* Advertisement / Showcase Picture Grid */
+        .ads-grid {
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            margin: 20px auto 50px auto;
+            padding: 0 20px;
+        }
+        .ad-card {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .ad-card:hover { transform: translateY(-5px); border-color: rgba(249, 115, 22, 0.5); }
+        .ad-box {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-radius: 10px;
+            border: 1px dashed rgba(249, 115, 22, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-orange);
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .ad-card p { font-size: 13px; color: var(--text-secondary); }
 
         /* About Us Section */
         .about-section {
-            background-color: var(--surface-color);
-            border-top: 1px solid var(--border-color);
-            padding: 50px 20px;
-            text-align: center;
-            margin-top: auto;
+            position: relative;
+            z-index: 10;
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1100px;
+            margin: 0 auto 60px auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
         }
-        .about-section h2 { color: var(--accent-orange); margin-bottom: 15px; font-size: 26px; }
-        .about-section p { max-width: 700px; margin: 0 auto; color: var(--text-secondary); line-height: 1.6; }
+        .about-section h2 { 
+            color: #ffffff; 
+            margin-bottom: 20px; 
+            font-size: 26px; 
+            font-weight: 800;
+            border-left: 4px solid var(--accent-orange);
+            padding-left: 15px;
+        }
+        .about-section p { max-width: 100%; margin: 0 0 15px 0; color: var(--text-secondary); line-height: 1.8; font-size: 15px; }
 
-        /* Modal Overlay */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-content {
-            background: var(--surface-color); border: 1px solid var(--border-color);
-            padding: 30px; border-radius: 12px; width: 100%; max-width: 420px; position: relative;
-        }
-        .modal-content h3 { margin-bottom: 20px; color: var(--accent-orange); text-align: center; font-size: 22px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-secondary); }
-        .form-group input, .form-group textarea {
-            width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color);
-            color: white; border-radius: 6px; font-size: 14px;
-        }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-orange); outline: none; }
-        .close-btn { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
-
-        /* Marketplace Dashboard */
-        .marketplace { padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        /* Marketplace & Dashboards */
+        .marketplace { position: relative; z-index: 10; padding: 40px 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
         .search-bar-container { display: flex; gap: 15px; margin-bottom: 30px; }
         .search-bar-container input {
-            flex: 1; padding: 14px 20px; background: var(--surface-color); border: 1px solid var(--border-color);
-            color: white; border-radius: 8px; font-size: 16px;
+            flex: 1; padding: 14px 20px; background: var(--surface-solid); border: 1px solid var(--border-color);
+            color: white; border-radius: 10px; font-size: 16px;
         }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
         .product-card {
-            background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px;
-            overflow: hidden; transition: transform 0.2s; display: flex; flex-direction: column;
+            background: rgba(17, 24, 39, 0.7); border: 1px solid var(--border-color); border-radius: 12px;
+            overflow: hidden; transition: all 0.3s ease; display: flex; flex-direction: column;
+            backdrop-filter: blur(10px);
         }
-        .product-card:hover { transform: translateY(-3px); border-color: var(--accent-orange); }
-        .product-info { padding: 15px; flex: 1; display: flex; flex-direction: column; }
-        .product-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
-        .product-price { color: var(--accent-orange); font-size: 18px; font-weight: 800; margin-bottom: 10px; }
-        .store-badge { font-size: 12px; color: var(--text-secondary); margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .product-card:hover { transform: translateY(-5px); border-color: var(--accent-orange); }
+        .product-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .product-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #fff; }
+        .product-price { color: var(--accent-orange); font-size: 20px; font-weight: 800; margin-bottom: 12px; }
+        .store-badge { font-size: 12px; color: var(--text-secondary); margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .store-badge a { color: var(--accent-orange); text-decoration: none; font-weight: bold; }
 
-        /* Seller Dashboard */
-        .dashboard-container { max-width: 900px; margin: 30px auto; padding: 20px; width: 100%; }
-        .card { background: var(--surface-color); border: 1px solid var(--border-color); padding: 25px; border-radius: 10px; margin-bottom: 25px; }
-        .link-box { background: var(--bg-color); padding: 12px; border-radius: 6px; border: 1px dashed var(--accent-orange); margin-top: 10px; word-break: break-all; font-family: monospace; color: var(--accent-orange); }
-
+        .dashboard-container { position: relative; z-index: 10; max-width: 900px; margin: 40px auto; padding: 0 20px; width: 100%; }
+        .card { background: rgba(17, 24, 39, 0.85); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; margin-bottom: 25px; backdrop-filter: blur(12px); }
+        .card h3 { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+        .link-box { background: var(--bg-color); padding: 14px; border-radius: 8px; border: 1px dashed var(--accent-orange); margin-top: 12px; word-break: break-all; font-family: monospace; color: var(--accent-orange); font-size: 14px; }
         .hidden { display: none !important; }
-        .flex { display: flex; gap: 10px; }
     </style>
 </head>
 <body>
-
-    <!-- Ads Banner -->
+    <div class="glow-orb"></div>
     <div class="ad-banner">
-        🚀 DUKAANGO ADS: Launch your custom digital storefront today with DukaanGo! Zero commission, absolute control.
+        🚀 DUKAANGO 2026 EDITION: Launch your custom digital storefront instantly with zero commission & absolute control!
     </div>
-
-    <!-- Header -->
     <header>
-        <div class="logo" onclick="location.reload()">DukaanGo</div>
+        <div class="logo" onclick="location.reload()">DukaanGo // 2026</div>
         <div>
             <button class="btn btn-outline" onclick="openAuthModal('buyer')">Buyer Login</button>
             <button class="btn" onclick="openAuthModal('role')">Get Started</button>
         </div>
     </header>
 
-    <!-- Landing View -->
     <div id="view-landing">
         <section class="hero">
             <h1>Build Your Own Digital Dukaan in Seconds with <span>DukaanGo</span></h1>
-            <p>Get a unique independent link for your shop, upload products, manage customers, and boost your local business instantly.</p>
-            <button class="btn" style="font-size: 18px; padding: 14px 35px;" onclick="openAuthModal('role')">Get Started</button>
+            <p>Get a unique independent link for your shop, upload products, manage customers, and boost your local business instantly with next-gen architecture.</p>
+            <button class="btn" style="font-size: 16px; padding: 14px 35px;" onclick="openAuthModal('role')">Get Started Now</button>
         </section>
+
+        <div class="ads-grid">
+            <div class="ad-card">
+                <div class="ad-box">NEURAL PULSE 01</div>
+                <p>AI-Driven Instant Store Synchronization & Real-time Analytics</p>
+            </div>
+            <div class="ad-card">
+                <div class="ad-box">QUANTUM GRID 02</div>
+                <p>Decentralized Edge Node Architecture & Zero Commission</p>
+            </div>
+            <div class="ad-card">
+                <div class="ad-box">CYBER SYNC 03</div>
+                <p>Advanced Matrix Security & Seamless Merchant Management</p>
+            </div>
+        </div>
 
         <section class="about-section">
-            <h2>About DukaanGo</h2>
-            <p>DukaanGo is a powerful platform empowering independent shopkeepers, creators, and entrepreneurs to take their businesses online without paying heavy marketplace commissions. You get your own custom link (e.g. <code>DukaanGo.onrender.com/storename</code>), full customer management control, and independent product listings designed like a top-tier brand branch.</p>
+            <h2>About DukaanGo Architecture</h2>
+            <p>DukaanGo is a powerful platform empowering independent shopkeepers, creators, and entrepreneurs to take their businesses online without paying heavy marketplace commissions. You get your own custom independent link, full customer management control, and independent product listings designed like a top-tier luxury brand branch.</p>
         </section>
     </div>
-
-    <!-- Buyer Marketplace View -->
-    <div id="view-marketplace" class="marketplace hidden">
+        <div id="view-marketplace" class="marketplace hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <h2>Buyer Marketplace</h2>
+            <h2 style="font-size: 28px; font-weight: 800; color: #fff;">Buyer Marketplace</h2>
             <button class="btn btn-outline" onclick="logout()">Logout</button>
         </div>
         <div class="search-bar-container">
-            <input type="text" id="searchInput" placeholder="Search products across all shops (e.g., sports shoe, shirt)..." oninput="filterProducts()">
+            <input type="text" id="searchInput" placeholder="Search products across all shops..." oninput="filterProducts()">
         </div>
-        <div id="productsGrid" class="products-grid">
-            <!-- Dynamic Products -->
-        </div>
+        <div id="productsGrid" class="products-grid"></div>
     </div>
 
-    <!-- Seller Dashboard View -->
     <div id="view-seller-dashboard" class="dashboard-container hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>Seller Dashboard</h2>
+            <h2 style="font-size: 28px; font-weight: 800; color: #fff;">Seller Dashboard</h2>
             <button class="btn btn-outline" onclick="logout()">Logout</button>
         </div>
         <div class="card">
             <h3>Your Store Link</h3>
-            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">Share this link with anyone to show your shop and products:</p>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">Share this link with anyone to show your shop:</p>
             <div class="link-box" id="displayStoreLink">DukaanGo.onrender.com/store/shopname</div>
             <a id="visitStoreBtn" href="#" target="_blank" class="btn" style="display: inline-block; margin-top: 15px; text-decoration: none; font-size: 13px;">Visit My Storefront</a>
         </div>
         <div class="card">
             <h3>Upload New Product</h3>
             <form id="productForm" onsubmit="uploadProduct(event)">
-                <div class="form-group">
-                    <label>Product Name</label>
-                    <input type="text" id="prodName" required placeholder="e.g. Nike Sports Shoe">
+                <div style="margin-bottom: 18px;">
+                    <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); font-weight: 600;">Product Name</label>
+                    <input type="text" id="prodName" required placeholder="e.g. Nike Sports Shoe" style="width: 100%; padding: 12px 16px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                 </div>
-                <div class="form-group">
-                    <label>Price (₹)</label>
-                    <input type="number" id="prodPrice" required placeholder="e.g. 1499">
+                <div style="margin-bottom: 18px;">
+                    <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); font-weight: 600;">Price (₹)</label>
+                    <input type="number" id="prodPrice" required placeholder="e.g. 1499" style="width: 100%; padding: 12px 16px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                 </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="prodDesc" rows="3" placeholder="Describe your product..."></textarea>
+                <div style="margin-bottom: 18px;">
+                    <label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); font-weight: 600;">Description</label>
+                    <textarea id="prodDesc" rows="3" placeholder="Describe your product..." style="width: 100%; padding: 12px 16px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;"></textarea>
                 </div>
                 <button type="submit" class="btn">Upload Product</button>
             </form>
@@ -203,13 +285,12 @@
     </div>
 
     <!-- Modals -->
-    <div id="authModal" class="modal hidden">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal()">&times;</button>
+    <div id="authModal" class="modal hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(8px);">
+        <div style="background: var(--surface-solid); border: 1px solid var(--border-orange); padding: 35px; border-radius: 16px; width: 100%; max-width: 440px; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.9);">
+            <button onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer;">&times;</button>
             
-            <!-- Step 1: Role Selection -->
             <div id="modal-step-role">
-                <h3>Welcome to DukaanGo</h3>
+                <h3 style="margin-bottom: 20px; color: var(--accent-orange); text-align: center; font-size: 24px; font-weight: 800;">Welcome to DukaanGo</h3>
                 <p style="text-align: center; color: var(--text-secondary); margin-bottom: 25px;">Choose how you want to use DukaanGo</p>
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <button class="btn" onclick="selectRole('seller')">I am a Seller (Create Store)</button>
@@ -217,38 +298,21 @@
                 </div>
             </div>
 
-            <!-- Step 2: Seller Registration / Login -->
             <div id="modal-step-seller" class="hidden">
-                <h3>Seller Portal</h3>
+                <h3 style="margin-bottom: 20px; color: var(--accent-orange); text-align: center; font-size: 24px; font-weight: 800;">Seller Portal</h3>
                 <form onsubmit="handleSellerAuth(event)">
-                    <div class="form-group">
-                        <label>Your Name</label>
-                        <input type="text" id="sellerName" required placeholder="Enter your full name">
-                    </div>
-                    <div class="form-group">
-                        <label>Shop Name (Unique)</label>
-                        <input type="text" id="shopNameInput" required placeholder="e.g. fashionhub (no spaces)">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="sellerPassword" required placeholder="Enter secure password">
-                    </div>
+                    <div style="margin-bottom: 18px;"><label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary);">Your Name</label><input type="text" id="sellerName" required placeholder="Enter full name" style="width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;"></div>
+                    <div style="margin-bottom: 18px;"><label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary);">Shop Name (Unique)</label><input type="text" id="shopNameInput" required placeholder="e.g. fashionhub" style="width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;"></div>
+                    <div style="margin-bottom: 18px;"><label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary);">Password</label><input type="password" id="sellerPassword" required placeholder="Enter password" style="width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;"></div>
                     <button type="submit" class="btn" style="width: 100%;">Create / Open Store</button>
                 </form>
             </div>
 
-            <!-- Step 2: Buyer Login -->
             <div id="modal-step-buyer" class="hidden">
-                <h3>Buyer Sign In</h3>
+                <h3 style="margin-bottom: 20px; color: var(--accent-orange); text-align: center; font-size: 24px; font-weight: 800;">Buyer Sign In</h3>
                 <form onsubmit="handleBuyerAuth(event)">
-                    <div class="form-group">
-                        <label>Your Name</label>
-                        <input type="text" id="buyerName" required placeholder="Enter your name">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="buyerPassword" required placeholder="Enter password">
-                    </div>
+                    <div style="margin-bottom: 18px;"><label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary);">Your Name</label><input type="text" id="buyerName" required placeholder="Enter your name" style="width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;"></div>
+                    <div style="margin-bottom: 18px;"><label style="display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary);">Password</label><input type="password" id="buyerPassword" required placeholder="Enter password" style="width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px;"></div>
                     <button type="submit" class="btn" style="width: 100%;">Login to Marketplace</button>
                 </form>
             </div>
@@ -261,11 +325,8 @@
         let currentBuyer = JSON.parse(localStorage.getItem('dukaango_buyer') || 'null');
 
         window.onload = function() {
-            if (currentSeller) {
-                showSellerDashboard(currentSeller);
-            } else if (currentBuyer) {
-                showMarketplace();
-            }
+            if (currentSeller) { showSellerDashboard(currentSeller); }
+            else if (currentBuyer) { showMarketplace(); }
         };
 
         function openAuthModal(type) {
@@ -274,14 +335,10 @@
                 document.getElementById('modal-step-role').classList.remove('hidden');
                 document.getElementById('modal-step-seller').classList.add('hidden');
                 document.getElementById('modal-step-buyer').classList.add('hidden');
-            } else if (type === 'buyer') {
-                selectRole('buyer');
-            }
+            } else if (type === 'buyer') { selectRole('buyer'); }
         }
 
-        function closeModal() {
-            document.getElementById('authModal').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('authModal').classList.add('hidden'); }
 
         function selectRole(role) {
             document.getElementById('modal-step-role').classList.add('hidden');
@@ -319,8 +376,7 @@
         function handleBuyerAuth(e) {
             e.preventDefault();
             const name = document.getElementById('buyerName').value;
-            const buyerInfo = { name };
-            localStorage.setItem('dukaango_buyer', JSON.stringify(buyerInfo));
+            localStorage.setItem('dukaango_buyer', JSON.stringify({ name }));
             closeModal();
             showMarketplace();
         }
@@ -329,11 +385,7 @@
             document.getElementById('view-landing').classList.add('hidden');
             document.getElementById('view-marketplace').classList.add('hidden');
             document.getElementById('view-seller-dashboard').classList.remove('hidden');
-
-            const domain = window.location.host;
-            const fullLink = `${domain}/store/${seller.shopName}`;
-            document.getElementById('displayStoreLink').innerText = fullLink;
-            document.getElementById('visitStoreBtn.href').href = `/store/${seller.shopName}`;
+            document.getElementById('displayStoreLink').innerText = `${window.location.host}/store/${seller.shopName}`;
             document.getElementById('visitStoreBtn').setAttribute('href', `/store/${seller.shopName}`);
         }
 
@@ -417,3 +469,4 @@
     </script>
 </body>
 </html>
+                    
