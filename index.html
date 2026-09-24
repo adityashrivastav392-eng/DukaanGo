@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DukaanGo - Instant Digital Mini-Store Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        orange: { 50: '#fff7ed', 100: '#ffedd5', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-orange-100 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-black text-orange-600 flex items-center gap-2">
+                🛍️ <span id="brandTitle">DukaanGo</span>
+            </h1>
+            <div id="headerActions" class="flex gap-2 text-xs font-semibold">
+                <span id="connectionStatus" class="bg-yellow-100 text-yellow-800 px-2.5 py-1 rounded-full flex items-center gap-1">Connecting...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- VIEW 1: Setup Store -->
+        <div id="setupView" class="hidden max-w-lg mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div class="text-center mb-6">
+                <span class="bg-orange-100 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Zero Cost • Realtime Cloud</span>
+                <h2 class="text-2xl font-extrabold text-gray-900 mt-2">DukaanGo Par Apni Dukaan Banao</h2>
+                <p class="text-gray-600 text-sm mt-1">Apna digital catalog shuru karo aur WhatsApp par direct orders pao.</p>
+            </div>
+            <form id="storeForm" onsubmit="createStore(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Dukaan / Business Name</label>
+                    <input type="text" id="shopName" required placeholder="e.g. Sharma General Store" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number (with Country Code)</label>
+                    <input type="text" id="whatsappNumber" required placeholder="e.g. 919876543210" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm">
+                </div>
+                <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl shadow transition text-sm">
+                    🚀 Launch DukaanGo Store
+                </button>
+            </form>
+        </div>
+
+        <!-- VIEW 2: Merchant Dashboard -->
+        <div id="dashboardView" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 id="dashShopName" class="text-2xl font-black">Shop Name</h2>
+                    <p class="text-orange-100 text-xs mt-1">Cloud Synchronized Dashboard ☁️</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="copyStoreShareLink()" class="bg-white text-orange-600 font-semibold text-xs px-4 py-2 rounded-xl shadow hover:bg-orange-50 transition">🔗 Copy Share Link</button>
+                    <button onclick="resetStoreData()" class="bg-red-500 text-white font-semibold text-xs px-3 py-2 rounded-xl shadow hover:bg-red-600 transition">🗑️ Reset</button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200">
+                <button onclick="switchTab('products')" id="tabProductsBtn" class="py-2 px-4 font-semibold text-sm border-b-2 border-orange-600 text-orange-600">📦 Products List</button>
+                <button onclick="switchTab('reviews')" id="tabReviewsBtn" class="py-2 px-4 font-semibold text-sm text-gray-500 hover:text-gray-700">⭐ Customer Reviews</button>
+            </div>
+
+            <!-- Tab 1: Products -->
+            <div id="tabProducts" class="space-y-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-gray-800 text-base mb-3">➕ Add New Product</h3>
+                    <form onsubmit="addNewProduct(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <input type="text" id="newProdName" required placeholder="Product Name" class="px-4 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                        <input type="number" id="newProdPrice" required placeholder="Price in ₹" class="px-4 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                        <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-xl text-sm shadow transition">Add Product</button>
+                    </form>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 text-base mb-3">Your Store Inventory</h3>
+                    <div id="merchantProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Reviews -->
+            <div id="tabReviews" class="hidden space-y-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-gray-800 text-base mb-2">⭐ Customer Feedback & Reviews</h3>
+                    <div id="reviewsList" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: Customer Storefront View -->
+        <div id="storefrontView" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <h2 id="storeDisplayTitle" class="text-2xl font-black">Store Name</h2>
+                    <p class="text-orange-100 text-xs mt-1">Powered by DukaanGo 🛒</p>
+                </div>
+                <button onclick="goToOwnerDashboard()" id="ownerDashBtn" class="hidden bg-white/20 hover:bg-white/35 text-white px-3 py-1.5 rounded-xl text-xs font-semibold">⚙️ My Dashboard</button>
+            </div>
+
+            <div id="customerProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-16"></div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 max-w-lg mx-auto">
+                <h3 class="font-bold text-gray-800 text-sm mb-3">💬 Leave a Review</h3>
+                <form onsubmit="submitReview(event)" class="space-y-3">
+                    <input type="text" id="reviewAuthor" required placeholder="Your Name" class="w-full px-4 py-2 border rounded-xl text-sm">
+                    <textarea id="reviewText" required placeholder="Write your feedback..." rows="2" class="w-full px-4 py-2 border rounded-xl text-sm"></textarea>
+                    <button type="submit" class="w-full bg-orange-600 text-white py-2 rounded-xl text-sm font-semibold hover:bg-orange-700">Submit Review</button>
+                </form>
+            </div>
+
+            <!-- Floating Cart -->
+            <div id="cartBar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-orange-200 shadow-lg p-4 hidden">
+                <div class="max-w-4xl mx-auto flex justify-between items-center">
+                    <div>
+                        <span id="cartCount" class="text-xs font-bold text-orange-600 bg-orange-100 px-2.5 py-1 rounded-full">0 items</span>
+                        <span id="cartTotal" class="text-sm font-bold text-gray-900 ml-2">Total: ₹0</span>
+                    </div>
+                    <button onclick="checkoutWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow flex items-center gap-2">💬 Order on WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-4 text-xs text-gray-400 border-t border-gray-100">
+        DukaanGo • Zero Cost Realtime Digital Platform
+    </footer>
+    <script>
+        const FIREBASE_DB_URL = "https://orders-339da-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+        let currentStoreId = localStorage.getItem('dukaango_active_store_id') || null;
+        let storeData = null;
+        let cart = {};
+
+        window.onload = async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewStoreId = urlParams.get('store');
+
+            if (viewStoreId) {
+                await fetchAndLoadStore(viewStoreId, true);
+            } else if (currentStoreId) {
+                await fetchAndLoadStore(currentStoreId, false);
+            } else {
+                document.getElementById('setupView').classList.remove('hidden');
+                updateStatus("Ready to Setup", "bg-blue-100 text-blue-800");
+            }
+        };
+
+        function updateStatus(text, colorClass) {
+            const badge = document.getElementById('connectionStatus');
+            badge.className = `px-2.5 py-1 rounded-full flex items-center gap-1 text-xs font-semibold ${colorClass}`;
+            badge.innerText = text;
+        }
+
+        async function fetchAndLoadStore(storeId, isCustomerView) {
+            updateStatus("Syncing Cloud...", "bg-yellow-100 text-yellow-800");
+            try {
+                let response = await fetch(`${FIREBASE_DB_URL}/stores/${storeId}.json`);
+                let data = await response.json();
+
+                if (data) {
+                    storeData = data;
+                    updateStatus("Cloud Connected 🟢", "bg-green-100 text-green-800");
+                    if (isCustomerView) { showCustomerStorefront(storeId); } 
+                    else { showMerchantDashboard(); }
+                } else {
+                    alert("Store not found on cloud!");
+                    localStorage.removeItem('dukaango_active_store_id');
+                    location.href = window.location.pathname;
+                }
+            } catch (err) {
+                updateStatus("Connection Failed 🔴", "bg-red-100 text-red-800");
+                alert("Network error connecting to Firebase Database.");
+            }
+        }
+
+        async function createStore(e) {
+            e.preventDefault();
+            const shopName = document.getElementById('shopName').value.trim();
+            const whatsappNumber = document.getElementById('whatsappNumber').value.trim();
+            const storeId = shopName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+            updateStatus("Checking Database...", "bg-yellow-100 text-yellow-800");
+
+            try {
+                // Check if store already exists in Firebase
+                let checkRes = await fetch(`${FIREBASE_DB_URL}/stores/${storeId}.json`);
+                let existingData = await checkRes.json();
+
+                if (existingData) {
+                    alert("⚠️ Store name already exists! Please choose another name.");
+                    updateStatus("Ready to Setup", "bg-blue-100 text-blue-800");
+                    return;
+                }
+
+                storeData = {
+                    id: storeId, name: shopName, whatsapp: whatsappNumber,
+                    products: { "p1": { id: "p1", name: "Sample Product", price: 100 } },
+                    reviews: { "r1": { author: "DukaanGo Team", text: "Welcome to your new digital store!" } }
+                };
+
+                updateStatus("Saving to Cloud...", "bg-yellow-100 text-yellow-800");
+                
+                await fetch(`${FIREBASE_DB_URL}/stores/${storeId}.json`, { method: 'PUT', body: JSON.stringify(storeData) });
+                localStorage.setItem('dukaango_active_store_id', storeId);
+                currentStoreId = storeId;
+                updateStatus("Cloud Connected 🟢", "bg-green-100 text-green-800");
+                showMerchantDashboard();
+            } catch (err) {
+                alert("Failed to connect or create store in Firebase.");
+                updateStatus("Connection Failed 🔴", "bg-red-100 text-red-800");
+            }
+        }
+
+        function showMerchantDashboard() {
+            hideAllViews();
+            document.getElementById('dashboardView').classList.remove('hidden');
+            document.getElementById('dashShopName').innerText = storeData.name;
+            document.getElementById('brandTitle').innerText = storeData.name;
+            renderMerchantProducts(); renderReviews();
+        }
+
+        function showCustomerStorefront(storeId) {
+            hideAllViews();
+            document.getElementById('storefrontView').classList.remove('hidden');
+            document.getElementById('storeDisplayTitle').innerText = storeData.name;
+            document.getElementById('brandTitle').innerText = storeData.name;
+            if (currentStoreId === storeId) { document.getElementById('ownerDashBtn').classList.remove('hidden'); }
+            renderCustomerProducts();
+        }
+
+        function renderMerchantProducts() {
+            const grid = document.getElementById('merchantProductsGrid');
+            grid.innerHTML = '';
+            const productsObj = storeData.products || {};
+            const keys = Object.keys(productsObj);
+
+            if (keys.length === 0) { grid.innerHTML = `<p class="text-sm text-gray-400 col-span-2">No products added yet.</p>`; return; }
+
+            keys.forEach(key => {
+                let prod = productsObj[key];
+                grid.innerHTML += `
+                    <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm">${prod.name}</h4>
+                            <p class="text-orange-600 font-semibold text-xs mt-0.5">₹${prod.price}</p>
+                        </div>
+                        <button onclick="deleteProduct('${key}')" class="text-red-500 hover:text-red-700 text-xs font-semibold px-3 py-1.5 border border-red-100 rounded-lg">Delete</button>
+                    </div>`;
+            });
+        }
+
+        async function addNewProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('newProdName').value.trim();
+            const price = parseFloat(document.getElementById('newProdPrice').value.trim());
+            const prodKey = 'prod_' + Date.now();
+            if (!storeData.products) storeData.products = {};
+            storeData.products[prodKey] = { id: prodKey, name, price };
+            await syncToCloud();
+            document.getElementById('newProdName').value = '';
+            document.getElementById('newProdPrice').value = '';
+            renderMerchantProducts();
+        }
+
+        async function deleteProduct(key) {
+            delete storeData.products[key];
+            await syncToCloud();
+            renderMerchantProducts();
+        }
+
+        async function submitReview(e) {
+            e.preventDefault();
+            const author = document.getElementById('reviewAuthor').value.trim();
+            const text = document.getElementById('reviewText').value.trim();
+            const revKey = 'rev_' + Date.now();
+            if (!storeData.reviews) storeData.reviews = {};
+            storeData.reviews[revKey] = { author, text };
+            await syncToCloud();
+            document.getElementById('reviewAuthor').value = '';
+            document.getElementById('reviewText').value = '';
+            alert('Review submitted successfully!');
+            renderReviews();
+        }
+
+        function renderReviews() {
+            const list = document.getElementById('reviewsList');
+            list.innerHTML = '';
+            const revObj = storeData.reviews || {};
+            const keys = Object.keys(revObj);
+            if (keys.length === 0) { list.innerHTML = `<p class="text-sm text-gray-400">No reviews yet.</p>`; return; }
+            keys.forEach(key => {
+                let rev = revObj[key];
+                list.innerHTML += `<div class="bg-gray-50 p-3 rounded-xl border border-gray-100"><h5 class="font-bold text-xs text-gray-800">⭐ ${rev.author}</h5><p class="text-xs text-gray-600 mt-1">${rev.text}</p></div>`;
+            });
+        }
+
+        async function syncToCloud() {
+            updateStatus("Saving...", "bg-yellow-100 text-yellow-800");
+            try {
+                await fetch(`${FIREBASE_DB_URL}/stores/${currentStoreId}.json`, { method: 'PUT', body: JSON.stringify(storeData) });
+                updateStatus("Cloud Synced 🟢", "bg-green-100 text-green-800");
+            } catch (err) { updateStatus("Sync Failed 🔴", "bg-red-100 text-red-800"); }
+        }
+
+        // Updated Share Link format: DukaanGo.onrender.com/storename (without https://)
+        function copyStoreShareLink() {
+            let isLocal = window.location.hostname.includes('localhost') || window.location.protocol === 'file:';
+            let link = isLocal 
+                ? `${window.location.origin}${window.location.pathname}?store=${currentStoreId}`
+                : `DukaanGo.onrender.com/${currentStoreId}`;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('✅ Store Link Copied!\n\n' + link);
+                }).catch(() => {
+                    prompt("Copy your store link manually:", link);
+                });
+            } else {
+                prompt("Copy your store link manually:", link);
+            }
+        }
+
+        function renderCustomerProducts() {
+            const grid = document.getElementById('customerProductsGrid');
+            grid.innerHTML = '';
+            const productsObj = storeData.products || {};
+            Object.keys(productsObj).forEach(key => {
+                let prod = productsObj[key];
+                grid.innerHTML += `
+                    <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">${prod.name}</h3>
+                            <p class="text-orange-600 font-semibold text-sm mt-1">₹${prod.price}</p>
+                        </div>
+                        <button onclick="addToCart('${key}', '${prod.name}', ${prod.price})" class="bg-orange-50 hover:bg-orange-600 hover:text-white text-orange-600 border border-orange-200 text-xs font-semibold px-4 py-2 rounded-xl transition">Add +</button>
+                    </div>`;
+            });
+        }
+
+        function addToCart(id, name, price) {
+            if (!cart[id]) { cart[id] = { name, price, qty: 1 }; } 
+            else { cart[id].qty += 1; }
+            updateCartBar();
+        }
+
+        function updateCartBar() {
+            let totalCount = 0, totalPrice = 0;
+            for (let id in cart) { totalCount += cart[id].qty; totalPrice += cart[id].price * cart[id].qty; }
+            const bar = document.getElementById('cartBar');
+            if (totalCount > 0) {
+                bar.classList.remove('hidden');
+                document.getElementById('cartCount').innerText = totalCount + ' items';
+                document.getElementById('cartTotal').innerText = 'Total: ₹' + totalPrice;
+            } else { bar.classList.add('hidden'); }
+        }
+
+        function checkoutWhatsApp() {
+            let message = `Hello! I want to order from *${storeData.name}* via *DukaanGo*:\n\n`;
+            let total = 0;
+            for (let id in cart) {
+                let item = cart[id];
+                let sub = item.price * item.qty;
+                total += sub;
+                message += `• ${item.name} x ${item.qty} = ₹${sub}\n`;
+            }
+            message += `\n*Total Amount: ₹${total}*`;
+            window.open(`https://wa.me/${storeData.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function goToOwnerDashboard() { showMerchantDashboard(); }
+
+        function resetStoreData() {
+            if (confirm('Are you sure you want to delete this store session?')) {
+                localStorage.removeItem('dukaango_active_store_id');
+                location.href = window.location.pathname;
+            }
+        }
+
+        function switchTab(tab) {
+            const prodBtn = document.getElementById('tabProductsBtn');
+            const revBtn = document.getElementById('tabReviewsBtn');
+            const prodTab = document.getElementById('tabProducts');
+            const revTab = document.getElementById('tabReviews');
+
+            if (tab === 'products') {
+                prodBtn.className = "py-2 px-4 font-semibold text-sm border-b-2 border-orange-600 text-orange-600";
+                revBtn.className = "py-2 px-4 font-semibold text-sm text-gray-500 hover:text-gray-700";
+                prodTab.classList.remove('hidden'); revTab.classList.add('hidden');
+            } else {
+                revBtn.className = "py-2 px-4 font-semibold text-sm border-b-2 border-orange-600 text-orange-600";
+                prodBtn.className = "py-2 px-4 font-semibold text-sm text-gray-500 hover:text-gray-700";
+                revTab.classList.remove('hidden'); prodTab.classList.add('hidden');
+            }
+        }
+
+        function hideAllViews() {
+            document.getElementById('setupView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('storefrontView').classList.add('hidden');
+            document.getElementById('cartBar').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
