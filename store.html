@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storefront - DukaanGo</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --accent-orange: #FF6600;
+            --text-primary: #FFFFFF;
+            --text-secondary: #AAAAAA;
+            --border-color: #333333;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        header {
+            background-color: var(--surface-color); padding: 20px 30px;
+            border-bottom: 2px solid var(--accent-orange); display: flex; justify-content: space-between; align-items: center;
+        }
+        .brand-logo { font-size: 20px; font-weight: bold; color: var(--accent-orange); text-decoration: none; }
+        
+        .store-header {
+            background: linear-gradient(135deg, #1E1E1E, #2A1A0E);
+            padding: 50px 20px; text-align: center; border-bottom: 1px solid var(--border-color);
+        }
+        .store-header h1 { font-size: 38px; color: var(--accent-orange); margin-bottom: 10px; }
+        .store-header h3 { font-size: 16px; color: var(--text-secondary); margin-bottom: 15px; font-weight: normal; }
+        .store-header p { max-width: 600px; margin: 0 auto; color: var(--text-primary); font-size: 16px; line-height: 1.5; }
+
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; width: 100%; flex: 1; }
+        .section-title { font-size: 22px; margin-bottom: 25px; border-left: 4px solid var(--accent-orange); padding-left: 10px; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .product-card {
+            background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 20px; display: flex; flex-direction: column; transition: 0.2s;
+        }
+        .product-card:hover { border-color: var(--accent-orange); transform: translateY(-2px); }
+        .product-name { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+        .product-price { color: var(--accent-orange); font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+        .product-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 15px; flex: 1; }
+        .buy-btn {
+            background: var(--accent-orange); color: white; border: none; padding: 10px;
+            font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; text-decoration: none;
+        }
+        .buy-btn:hover { opacity: 0.9; }
+
+        footer { text-align: center; padding: 25px; color: var(--text-secondary); font-size: 13px; border-top: 1px solid var(--border-color); background: var(--surface-color); }
+        footer a { color: var(--accent-orange); text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="brand-logo">DukaanGo Storefront</a>
+        <a href="/" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">&larr; Back to DukaanGo Home</a>
+    </header>
+
+    <div class="store-header" id="storeHeader">
+        <h1 id="shopTitle">Loading Shop...</h1>
+        <h3 id="ownerTitle">Producer: --</h3>
+        <p id="shopBio">--</p>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">Available Products</h2>
+        <div id="storeProductsGrid" class="products-grid">
+            <!-- Loaded dynamically -->
+        </div>
+    </div>
+
+    <footer>
+        Powered by <a href="/">DukaanGo</a> - Create your independent store instantly.
+    </footer>
+
+    <script>
+        async function loadStoreData() {
+            const pathParts = window.location.pathname.split('/');
+            const shopName = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+            
+            if (!shopName) {
+                document.getElementById('shopTitle').innerText = "Shop Not Found";
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/store/${shopName}`);
+                const data = await res.json();
+                if (data.success) {
+                    const store = data.store;
+                    document.getElementById('shopTitle').innerText = store.shopName.toUpperCase();
+                    document.getElementById('ownerTitle').innerText = "Producer / Owner: " + store.ownerName;
+                    document.getElementById('shopBio').innerText = store.bio;
+                    document.title = store.shopName.toUpperCase() + " | DukaanGo";
+
+                    const grid = document.getElementById('storeProductsGrid');
+                    grid.innerHTML = '';
+                    if (store.products) {
+                        Object.values(store.products).forEach(p => {
+                            grid.innerHTML += `
+                                <div class="product-card">
+                                    <div class="product-name">${p.name}</div>
+                                    <div class="product-price">₹${p.price}</div>
+                                    <div class="product-desc">${p.description || 'No description provided.'}</div>
+                                    <button class="buy-btn" onclick="alert('Order enquiry sent to ${store.ownerName}!')">Buy Now / Enquire</button>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        grid.innerHTML = '<p style="color: var(--text-secondary);">No products uploaded yet by this shop.</p>';
+                    }
+                } else {
+                    document.getElementById('shopTitle').innerText = "Store Not Found";
+                    document.getElementById('ownerTitle').innerText = "";
+                    document.getElementById('shopBio').innerText = "This store does not exist or has been removed.";
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('shopTitle').innerText = "Error loading store";
+            }
+        }
+
+        loadStoreData();
+    </script>
+</body>
+</html>
